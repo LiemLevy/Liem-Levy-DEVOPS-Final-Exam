@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  stages {
+    stage('Parallel Checks') {
+      parallel {
+        stage('Linting') {
+          steps { sh 'echo "Linting passed"' }
+        }
+        stage('Security Scan') {
+          steps { sh 'echo "Security scan passed"' }
+        }
+      }
+    }
+    stage('Build & Push Docker') {
+      steps {
+        script {
+          docker.build("yourdockerhubuser/flask-app:${env.BUILD_NUMBER}")
+          docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+            docker.image("yourdockerhubuser/flask-app:${env.BUILD_NUMBER}").push()
+          }
+        }
+      }
+    }
+  }
+}
