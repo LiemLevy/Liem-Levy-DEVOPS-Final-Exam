@@ -1,0 +1,48 @@
+replicaCount: 2
+
+image:
+  repository: YOUR_DOCKERHUB_USERNAME/flask-aws-monitor
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5001
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: flask-monitor.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+aws:
+  accessKeyId: "AKIAXLEKZJVVSTPGSZ6O"
+  secretAccessKey: "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"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 5001
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 5001
+  initialDelaySeconds: 5
+  periodSeconds: 5
