@@ -1,0 +1,113 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKERHUB_USERNAME = credentials('dockerhub-username')
+        DOCKERHUB_PASSWORD = credentials('dockerhub-password')
+        IMAGE_NAME = 'YOUR_DOCKERHUB_USERNAME/flask-aws-monitor'
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
+            }
+        }
+        
+        stage('Parallel Checks') {
+            parallel {
+                stage('Linting') {
+                    steps {
+                        script {
+                            echo '=== Running Linting Checks ==='
+                            sh '''
+                                echo "Running Flake8 for Python..."
+                                echo "Flake8 check completed (mocked)"
+                            '''
+                            sh '''
+                                echo "Running Hadolint for Dockerfile..."
+                                echo "Hadolint check completed (mocked)"
+                            '''
+                            sh '''
+                                echo "Running ShellCheck..."
+                                echo "ShellCheck completed (mocked)"
+                            '''
+                        }
+                    }
+                }
+                
+                stage('Security Scan') {
+                    steps {
+                        script {
+                            echo '=== Running Security Scans ==='
+                            sh '''
+                                echo "Running Bandit for Python security..."
+                                echo "Bandit scan completed (mocked)"
+                            '''
+                            sh '''
+                                echo "Running dependency vulnerability scan..."
+                                echo "Dependency scan completed (mocked)"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo '=== Building Docker Image ==='
+                    dir('app') {
+                        sh """
+                            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+                        """
+                    }
+                }
+            }
+        }
+        
+        stage('Docker Security Scan') {
+            steps {
+                script {
+                    echo '=== Running Trivy Container Scan ==='
+                    sh '''
+                        echo "Running Trivy scan on Docker image..."
+                        echo "Trivy scan completed (mocked)"
+                    '''
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    echo '=== Pushing to Docker Hub ==='
+                    sh """
+                        echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${IMAGE_NAME}:latest
+                        docker logout
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed! Check logs for details.'
+        }
+        always {
+            sh '''
+                docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
+                docker rmi ${IMAGE_NAME}:latest || true
+            '''
+        }
+    }
+}
