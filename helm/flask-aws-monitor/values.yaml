@@ -14,16 +14,22 @@ ingress:
   enabled: false
   className: "nginx"
   annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
     - host: flask-monitor.local
       paths:
         - path: /
           pathType: Prefix
   tls: []
+  #  - secretName: flask-monitor-tls
+  #    hosts:
+  #      - flask-monitor.local
 
 aws:
   accessKeyId: "AKIAXLEKZJVVSTPGSZ6O"
   secretAccessKey: "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"
+  region: "us-east-1"
 
 resources:
   limits:
@@ -35,14 +41,31 @@ resources:
 
 livenessProbe:
   httpGet:
-    path: /
+    path: /health
     port: 5001
   initialDelaySeconds: 30
   periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 
 readinessProbe:
   httpGet:
-    path: /
+    path: /health
     port: 5001
   initialDelaySeconds: 5
   periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
