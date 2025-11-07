@@ -4,3 +4,13 @@ description: A Helm chart for Flask AWS Monitor application
 type: application
 version: 1.0.0
 appVersion: "1.0"
+keywords:
+  - flask
+  - aws
+  - monitoring
+  - devops
+maintainers:
+  - name: DevOps Team
+home: https://github.com/YOUR_USERNAME/YOUR_REPO
+sources:
+  - https://github.com/YOUR_USERNAME/YOUR_REPO
