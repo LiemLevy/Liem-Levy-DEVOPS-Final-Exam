@@ -28,3 +28,4 @@ For Cloud:
 ```bash
 kubectl get svc flask-aws-monitor
 ```
+
