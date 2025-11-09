@@ -36,3 +36,4 @@ helm upgrade flask-monitor ./flask-aws-monitor
 ```bash
 helm uninstall flask-monitor
 ```
+
