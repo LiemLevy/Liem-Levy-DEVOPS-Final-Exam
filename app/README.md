@@ -20,3 +20,4 @@ python app.py
 docker build -t flask-aws-monitor:latest .
 docker run -d -p 5001:5001 -e AWS_ACCESS_KEY_ID="key" -e AWS_SECRET_ACCESS_KEY="secret" flask-aws-monitor:latest
 ```
+
