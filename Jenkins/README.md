@@ -32,3 +32,4 @@ Open: http://<EC2-IP>:8080
 ### Update Jenkinsfile
 - IMAGE_NAME: your-dockerhub-username/flask-aws-monitor
 - Git URL: your repository URL
+
