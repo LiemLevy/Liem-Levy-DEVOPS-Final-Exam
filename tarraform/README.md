@@ -52,3 +52,4 @@ terraform destroy
 - Private key is stored locally as `builder_key.pem`
 - Change security group CIDR blocks to your IP for better security
 - Instance is in a public subnet for external access
+- 
